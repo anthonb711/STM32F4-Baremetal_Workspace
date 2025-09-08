@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "stm32f411xE.h"
+#include "stm32f411xe.h"
 // APB1 BASE: 0x4000 0000
 // APB1 RCC_APB1ENR offset: 0x40
 

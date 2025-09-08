@@ -59,8 +59,8 @@ all: main-build
 main-build: 17_adc_interrupt.elf secondary-outputs
 
 # Tool invocations
-17_adc_interrupt.elf 17_adc_interrupt.map: $(OBJS) $(USER_OBJS) /Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/17_adc_interrupt/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "17_adc_interrupt.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/17_adc_interrupt/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="17_adc_interrupt.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+17_adc_interrupt.elf 17_adc_interrupt.map: $(OBJS) $(USER_OBJS) /home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/17_adc_interrupt/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "17_adc_interrupt.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/17_adc_interrupt/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="17_adc_interrupt.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

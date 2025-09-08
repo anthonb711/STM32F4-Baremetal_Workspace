@@ -33,34 +33,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := 9_adc_single_conversion
+BUILD_ARTIFACT_NAME := 09_adc_single_conversion
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-9_adc_single_conversion.elf \
+09_adc_single_conversion.elf \
 
 MAP_FILES += \
-9_adc_single_conversion.map \
+09_adc_single_conversion.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-9_adc_single_conversion.list \
+09_adc_single_conversion.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: 9_adc_single_conversion.elf secondary-outputs
+main-build: 09_adc_single_conversion.elf secondary-outputs
 
 # Tool invocations
-9_adc_single_conversion.elf 9_adc_single_conversion.map: $(OBJS) $(USER_OBJS) /Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/9_adc_single_conversion/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "9_adc_single_conversion.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/9_adc_single_conversion/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="9_adc_single_conversion.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+09_adc_single_conversion.elf 09_adc_single_conversion.map: $(OBJS) $(USER_OBJS) /home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/09_adc_single_conversion/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "09_adc_single_conversion.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/09_adc_single_conversion/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="09_adc_single_conversion.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -69,14 +69,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-9_adc_single_conversion.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "9_adc_single_conversion.list"
+09_adc_single_conversion.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "09_adc_single_conversion.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) 9_adc_single_conversion.elf 9_adc_single_conversion.list 9_adc_single_conversion.map default.size.stdout
+	-$(RM) 09_adc_single_conversion.elf 09_adc_single_conversion.list 09_adc_single_conversion.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

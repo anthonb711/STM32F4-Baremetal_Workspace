@@ -3,6 +3,7 @@
 	<name>0_led_toggle_addr</name>
 	<comment></comment>
 	<projects>
+		<project>01_led_toggle_addr_struct</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

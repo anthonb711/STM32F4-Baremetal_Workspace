@@ -1,6 +1,5 @@
 #include "stm32f411xe.h"
 
-
 #define GPIOAEN			(1U<<0)
 #define GPIOA_5			(1U<<5)
 #define LED_PIN			GPIOA_5

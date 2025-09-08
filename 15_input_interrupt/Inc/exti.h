@@ -1,4 +1,4 @@
-#include "stm32f411xE.h"
+#include "stm32f411xe.h"
 
 #ifndef EXTI_H_
 #define EXTI_H_

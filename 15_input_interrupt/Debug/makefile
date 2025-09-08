@@ -33,34 +33,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := 15_inputInterrupt
+BUILD_ARTIFACT_NAME := 15_input_interrupt
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-15_inputInterrupt.elf \
+15_input_interrupt.elf \
 
 MAP_FILES += \
-15_inputInterrupt.map \
+15_input_interrupt.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-15_inputInterrupt.list \
+15_input_interrupt.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: 15_inputInterrupt.elf secondary-outputs
+main-build: 15_input_interrupt.elf secondary-outputs
 
 # Tool invocations
-15_inputInterrupt.elf 15_inputInterrupt.map: $(OBJS) $(USER_OBJS) /Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/15_inputInterrupt/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "15_inputInterrupt.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/15_inputInterrupt/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="15_inputInterrupt.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+15_input_interrupt.elf 15_input_interrupt.map: $(OBJS) $(USER_OBJS) /home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/15_input_interrupt/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "15_input_interrupt.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/15_input_interrupt/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="15_input_interrupt.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -69,14 +69,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-15_inputInterrupt.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "15_inputInterrupt.list"
+15_input_interrupt.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "15_input_interrupt.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) 15_inputInterrupt.elf 15_inputInterrupt.list 15_inputInterrupt.map default.size.stdout
+	-$(RM) 15_input_interrupt.elf 15_input_interrupt.list 15_input_interrupt.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

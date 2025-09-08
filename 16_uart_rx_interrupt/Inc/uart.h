@@ -4,7 +4,7 @@
 #define UART_H_
 
 #include <stdint.h>
-#include "stm32f411xE.h"
+#include "stm32f411xe.h"
 
 #define SR_RXNE			(1U<<5)		// RX not empty, only try to read if data is present
 

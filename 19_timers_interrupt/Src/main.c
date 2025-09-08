@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "stm32f411xE.h"
+#include "stm32f411xe.h"
 #include "uart.h"
 #include "adc.h"
 #include "systick.h"

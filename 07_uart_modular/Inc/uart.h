@@ -4,7 +4,7 @@
 #define UART_H_
 
 #include <stdint.h>
-#include "stm32f411xE.h"
+#include "stm32f411xe.h"
 
 
 void uart2_tx_init(void);

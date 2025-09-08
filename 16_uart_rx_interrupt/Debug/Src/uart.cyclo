@@ -1,4 +1,4 @@
-/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/chip_headers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	2
+/home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/chip_headers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	2
 ../Src/uart.c:26:5:__io_putchar	1
 ../Src/uart.c:34:6:uart2_rx_interrupt_init	1
 ../Src/uart.c:87:6:uart2_read	2

@@ -33,34 +33,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := 4_gpio_input
+BUILD_ARTIFACT_NAME := 04_gpio_input
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-4_gpio_input.elf \
+04_gpio_input.elf \
 
 MAP_FILES += \
-4_gpio_input.map \
+04_gpio_input.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-4_gpio_input.list \
+04_gpio_input.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: 4_gpio_input.elf secondary-outputs
+main-build: 04_gpio_input.elf secondary-outputs
 
 # Tool invocations
-4_gpio_input.elf 4_gpio_input.map: $(OBJS) $(USER_OBJS) /Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/4_gpio_input/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "4_gpio_input.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/4_gpio_input/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="4_gpio_input.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+04_gpio_input.elf 04_gpio_input.map: $(OBJS) $(USER_OBJS) /home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/04_gpio_input/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "04_gpio_input.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/04_gpio_input/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="04_gpio_input.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -69,14 +69,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-4_gpio_input.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "4_gpio_input.list"
+04_gpio_input.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "04_gpio_input.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) 4_gpio_input.elf 4_gpio_input.list 4_gpio_input.map default.size.stdout
+	-$(RM) 04_gpio_input.elf 04_gpio_input.list 04_gpio_input.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

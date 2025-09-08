@@ -1,5 +1,5 @@
 
-#include "stm32f411xE.h"
+#include "stm32f411xe.h"
 #include "adc.h"
 
 #define ADC1EN			(1U<<8)
