@@ -1,4 +1,4 @@
-[200~# STM32 Bare-Metal Programming – From the Ground Up
+# STM32 Bare-Metal Programming – From the Ground Up
 
 This repository contains my code, notes, and experiments while following along with the Udemy course **“STM32 Bare-Metal Programming from the Ground Up.”**  
 The purpose of this repo is to document my learning journey, organize lab exercises, and provide working examples of bare-metal embedded C programming on STM32 microcontrollers.
