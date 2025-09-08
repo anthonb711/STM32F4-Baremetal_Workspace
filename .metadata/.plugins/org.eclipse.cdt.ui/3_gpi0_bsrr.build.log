@@ -1,0 +1,17 @@
+06:20:51 **** Incremental Build of configuration Debug for project 3_gpi0_bsrr ****
+make -j9 all 
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DNUCLEO_F411RE -DSTM32 -DSTM32F4 -DSTM32F411RETx -c -I../Inc -I/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/chip_headers/CMSIS/Device/ST/STM32F4xx/Include -I/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/chip_headers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc -o "3_gpi0_bsrr.elf" @"objects.list"   -mcpu=cortex-m4 -T"/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/3_gpi0_bsrr/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="3_gpi0_bsrr.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 3_gpi0_bsrr.elf
+ 
+arm-none-eabi-size  3_gpi0_bsrr.elf 
+arm-none-eabi-objdump -h -S 3_gpi0_bsrr.elf  > "3_gpi0_bsrr.list"
+   text	   data	    bss	    dec	    hex	filename
+    776	      0	   1568	   2344	    928	3_gpi0_bsrr.elf
+Finished building: default.size.stdout
+ 
+Finished building: 3_gpi0_bsrr.list
+ 
+
+06:20:51 Build Finished. 0 errors, 0 warnings. (took 481ms)
+

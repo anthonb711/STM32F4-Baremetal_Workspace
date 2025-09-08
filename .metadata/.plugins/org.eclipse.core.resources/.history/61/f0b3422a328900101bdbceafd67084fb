@@ -1,0 +1,10 @@
+#include "stm32f411xE.h"
+#include "exti.h"
+
+
+/* I interrupt toggle when the user pushbutton is pressed
+ *	The push button is on PC13
+ *
+ *	configure PC13 pin 13 as an input to generate an interrupt when a rising or
+ *	falling edge on the button input is detected
+ * */

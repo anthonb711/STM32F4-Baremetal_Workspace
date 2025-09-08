@@ -1,0 +1,143 @@
+
+#include "uart.h"
+
+#define APB1_CLK		SYS_FREQ
+#define	CR1_RE			(1U<<2)
+#define CR1_TE			(1U<<3)		// transmit with defaults. 1 stop bit, parity is even// receive enable
+#define CR1_UE			(1U<<13)    // UART enable
+#define GPIOAEN			(1U<<0)
+#define USART2EN		(1U<<17)
+#define SYS_FREQ		16000000	// 16MHz
+#define	UART_BAUDRATE	115200
+#define SR_RXNE			(1U<<5)		// RX not empty, only try to read if data is present
+#define CR1_RXNEIE		(1U<<5)
+
+
+static void 	uart_set_bd		(USART_TypeDef *USARTx, uint32_t PeriphClk, uint32_t Baudrate	);
+static uint16_t compute_uart_bd	(uint32_t PeriphClk, uint32_t Baudrate							);
+
+
+/***********
+ * In C printf() calls fputc() to print to console. STM32F4 does not have a console.
+ * So something else must be done with the out printf() calls fputc().
+ * __io_putchar() is a hook function that STM uses to redirect the printf() to some other use place.
+ * In this case to the UART TX through the uart2_write().
+***********/
+int __io_putchar(int ch)
+{
+  uart2_write(ch);
+
+  return ch;
+}
+
+
+void uart2_rx_interrupt_init(void)
+{
+	/* disable global interrupt, THIS IS BEST PRACTICE */
+	__disable_irq(); // this is found in the chip specific .h file
+
+	/*************** Configure the GPIO pin ***************/
+	/* enable clock access to GPIOA */
+	RCC->AHB1ENR |= GPIOAEN;
+
+
+	/* set PA3 mode to alt function mode */
+	GPIOA->MODER &=~(1U<<6);
+	GPIOA->MODER |= (1U<<7);
+
+	/* set PA3 alt function type to UART_RX (AF07) (0111)(bits 12-15) */
+	GPIOA->AFR[0] |= (1U<<12);
+	GPIOA->AFR[0] |= (1U<<13);
+	GPIOA->AFR[0] |= (1U<<14);
+	GPIOA->AFR[0] &=~(1U<<15);
+
+	/*************** Configure the uart module ***************/
+	/* enable clock access to uart2 */
+	RCC->APB1ENR |= USART2EN;
+
+	/* configure baudrate */
+	uart_set_bd(USART2,SYS_FREQ, UART_BAUDRATE);
+
+	/* configure the transfer direction */
+	USART2->CR1  = CR1_RE; // Clean the UART overwrite instead of friendly programming with the |=
+
+	/* enable rx interrupt */
+	USART2->CR1 |= CR1_RXNEIE;
+
+	/* enable the interrupt in the NVIC*/
+	NVIC_EnableIRQ(USART2_IRQn);
+
+	/* enable the uart module */
+	USART2->CR1 |= CR1_UE; // We have already configure the TE and defaults need to keep it with friendly programming |=
+
+
+	/* enable global interrupt */
+	__enable_irq();
+
+
+}
+
+void uart2_tx_init(void)
+{
+	/*************** Configure the GPIO pin ***************/
+	/* enable clock access to GPIOA */
+	RCC->AHB1ENR |= GPIOAEN;
+
+	/* set PA2 mode to alt function mode */
+	GPIOA->MODER &=~(1U<<4);
+	GPIOA->MODER |= (1U<<5);
+
+	/* set PA2 alt function type to UART_TX (AF07) (0111)(bits 8-11) */
+	/* AFR has an arry of size 2, [0]for AFRL [1] for AFRH */
+	GPIOA->AFR[0] |= (1U<<8);
+	GPIOA->AFR[0] |= (1U<<9);
+	GPIOA->AFR[0] |= (1U<<10);
+	GPIOA->AFR[0] &=~(1U<<11);
+
+	/*************** Configure the uart module ***************/
+	/* enable clock access to uart2 */
+	RCC->APB1ENR |= USART2EN;
+
+	/* configure bauderate */
+	uart_set_bd(USART2,SYS_FREQ, UART_BAUDRATE);
+
+	/* configure the transfer direction */
+	USART2->CR1 = CR1_TE; // Clean the UART overwrite instead of friendly programming with the |=
+	/* enable the uart module */
+	USART2->CR1 |= CR1_UE; // We have already configure the TE and defaults need to keep it with friendly programming |=
+}
+
+
+
+
+
+char uart2_read(void)
+{
+	/* make sure receive data register is NOT empty */
+	while(!(USART2->SR & SR_RXNE)){}
+
+	/* read data */
+	return USART2->DR;
+
+}
+
+void uart2_write(int ch)
+{
+	/* make sure transmit data register is empty */
+	while(!USART2->SR){}
+
+	/* write to transmit data register */
+	USART2->DR = (ch & 0xFF);
+
+}
+
+static void uart_set_bd(USART_TypeDef *USARTx, uint32_t PeriphClk, uint32_t Baudrate)
+{
+	USARTx->BRR = compute_uart_bd(PeriphClk, Baudrate); //BRR = BaudRateRegister
+
+}
+
+static uint16_t compute_uart_bd(uint32_t PeriphClk, uint32_t Baudrate)
+{
+	return (PeriphClk + (Baudrate/2U)) / Baudrate;
+}

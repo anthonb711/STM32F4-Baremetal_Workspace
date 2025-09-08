@@ -1,0 +1,5 @@
+/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/chip_headers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	2
+../Src/adc.c:16:6:pa1_adc_interrupt_init	1
+../Src/adc.c:47:6:pa1_adc_init	1
+../Src/adc.c:68:6:start_conversion	1
+../Src/adc.c:76:10:adc_read	2

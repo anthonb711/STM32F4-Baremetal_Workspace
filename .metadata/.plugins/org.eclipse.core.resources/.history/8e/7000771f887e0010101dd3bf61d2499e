@@ -1,0 +1,11 @@
+// Where is the led connected? - Look in the dev board User Manual for User LED LD2
+// Port:	A
+// Pin:		5
+
+
+// How do we get to Port A? - Look in the controller datasheet - Memory Map Peripherals GIPO Port A
+
+
+#define PERIPH_BASE			(0x40000000UL)
+#define AHB1PERIPH_OFFSET	(0x00020000UL) // 0x4002 0000 = starting point of the AHB1 bus and GPIO A
+#define AHB1PERIPH_BASE

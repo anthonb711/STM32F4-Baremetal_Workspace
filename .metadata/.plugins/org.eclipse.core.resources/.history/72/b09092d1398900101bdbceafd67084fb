@@ -1,0 +1,49 @@
+#include "stm32f411xE.h"
+#include "exti.h"
+
+
+#define GPIOCEN			(1U<<2)
+
+#define SYSCFGEN		(1U<<14)
+#define EXTI13_PORTC	(1U<<5)	// PC13 = 0010
+#define UNMASK13		(1U<<13)
+#define FALLING_TRIGGER	(1U<<13)
+
+/* I interrupt toggle when the user pushbutton is pressed
+ *	The push button is on PC13
+ *
+ *	configure PC13 pin 13 as an input to generate an interrupt when a rising or
+ *	falling edge on the button input is detected
+ * */
+
+
+void pc13_exti_init(void)
+{
+	/* disable global interrupt, THIS IS BEST PRACTICE */
+	__disable_irq(); // this is found in the chip specific .h file
+
+	/* enable clock access for GPIOC */
+	RCC->AHB1ENR |= GIPOCEN;
+	/* enable clock access to SYSCFG module */
+	RCC->APB2ENR |= SYSCFGEN;
+
+	/*  set pin13 direction to input */
+	GPIOC->MODER &=~(1U<<26);
+	GPIOC->MODER &=~(1U<<27);
+
+	/* select Port C for EXTI13 */
+	SYSCFG->EXTICR[3] |= EXTI13_PORTC;
+	/* unmask EXTI13 */
+	EXTI->IMR |= UNMASK13;
+	/* select falling edge trigger */
+	EXTI->FTSR |= FALLING_TRIGGER;
+	/* enable EXTI13 line in NVIC  */
+	NVIC_EnableIRQ(EXTI15-10);
+
+	/* enable global interrupt */
+	__enable_irq();
+	/*  */
+	/*  */
+	/*  */
+
+}
