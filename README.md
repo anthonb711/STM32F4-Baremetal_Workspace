@@ -40,7 +40,7 @@ For more information, see the [course page on Udemy](https://www.udemy.com/) *(l
 |-- 05_uart_tx/
 |-- 06_uart_printf/
 |-- 07_uart_modular/
-|-- 08_uart_rx/|   
+|-- 08_uart_rx/   
 |-- 09_adc_single_conversion/
 |-- 10_adc_continuous_conversion/
 |-- 11_systick_delay/
