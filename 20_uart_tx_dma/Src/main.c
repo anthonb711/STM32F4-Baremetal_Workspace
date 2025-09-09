@@ -10,7 +10,8 @@
 
 
 
-static void uart2_callback(void);
+static void uart2_callback			(void);
+static void dma1_stream6_callback	(void);
 
 char key;
 
@@ -54,6 +55,17 @@ void USART2_IRQHandler(void)
 	}
 }
 
+
+static void dma1_stream6_callback(void)
+{
+
+}
+
+void DMA1_Stream6_IRQHandler()
+{
+	dma1_stream6_callback();
+
+}
 
 
 

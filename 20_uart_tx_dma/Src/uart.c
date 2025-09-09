@@ -1,18 +1,25 @@
 
 #include "uart.h"
 
-#define APB1_CLK		SYS_FREQ
-#define	CR1_RE			(1U<<2)
-#define CR1_TE			(1U<<3)		// transmit with defaults. 1 stop bit, parity is even// receive enable
-#define CR1_UE			(1U<<13)    // UART enable
-#define GPIOAEN			(1U<<0)
-#define USART2EN		(1U<<17)
-#define SYS_FREQ		16000000	// 16MHz
-#define	UART_BAUDRATE	115200
-#define SR_RXNE			(1U<<5)		// RX not empty, only try to read if data is present
-#define CR1_RXNEIE		(1U<<5)
-#define DMA1EN			(1U<<21)
-#define CR_STREAM_6_EN	(1U<<0)
+#define APB1_CLK			SYS_FREQ
+#define	CR1_RE				(1U<<2)
+#define CR1_TE				(1U<<3)		// transmit with defaults. 1 stop bit, parity is even// receive enable
+#define CR1_UE				(1U<<13)    // UART enable
+#define GPIOAEN				(1U<<0)
+#define USART2EN			(1U<<17)
+#define USART_CR3_DMAT		(1U<<7)
+#define SYS_FREQ			16000000	// 16MHz
+#define	UART_BAUDRATE		115200
+#define SR_RXNE				(1U<<5)		// RX not empty, only try to read if data is present
+#define CR1_RXNEIE			(1U<<5)
+#define DMA1EN				(1U<<21)
+#define DMA_S6CR_EN			(1U<<0)
+#define DMA_S6CR_CHSEL		(4U<<25) // CH4
+#define DMA_S6CR_MINC		(1U<<10)
+#define DMA_S6CR_TCIE		(1U<<4)
+#define DMA_S6CR_DIR		(1U<6)	// set transfer direction to mem->periph
+
+
 
 
 static void 	uart_set_bd		(USART_TypeDef *USARTx, uint32_t PeriphClk, uint32_t Baudrate	);
@@ -39,20 +46,44 @@ void dma1_stream6_init(uint32_t src, uint32_t dst, uint32_t len)
 	/* enable clock access to DMA */
 	RCC->AHB1ENR |= DMA1EN;
 	/* disable DMA1 stream 6 */
-	DMA1_Stream6->CR &=~CR_STREAM_6_EN;
+	DMA1_Stream6->CR &=~DMA_S6CR_EN;
 	/* clear all interrupt flags for stream6 */
-	DMA1->LIFCR =~ 0U;
-	DMA1->HISR 	=~ 0U;
-	/* set destination buffer */
-	/* set source buffer */
+	DMA1->HIFCR |= (1<<16);
+	DMA1->HIFCR |= (1<<18);
+	DMA1->HIFCR |= (1<<19);
+	DMA1->HIFCR |= (1<<20);
+	DMA1->HIFCR |= (1<<21);
+
+	/* set destination buffer - PSIZE bits 12:11 32-bit word = 10 */
+	DMA1_Stream6->PAR = dst;
+
+	/* set source buffer - MSIZE bits 14:13 32-bit word = 10 */
+	DMA1_Stream6->M0AR = src;
+
 	/* set length */
-	/* select stream6 CH4 */
+	DMA1_Stream6->NDTR = len;
+
+	/* select stream6 CH4  - CHSEL bits 27:25 CH4 = 100*/
+	DMA_Stream6->CR = DMA_S6CR_CHSEL; // clear the full register and set CH select to CH4
+
 	/* enable memory increment */
-	/* configure direction - mem -> periph */
-	/* disable FIFO Mode */
+	DMA_Stream6->CR |= DMA_S6CR_MINC;
+
+	/* configure direction - mem -> periph - bits 1:0 (01) */
+	DMA1_Stream6->CR |= DMA_S6CR_DIR;
+
+	/* enable direct mode & disable FIFO Mode */
+	DMA1_Stream6->FCR = 0;
+
 	/* enable DMA1 stream6 CH4 */
+	DMA1_Stream6->CR |= DMA_S6CR_EN;
+
 	/* enable uart2_tx DMA */
-	/* DMA interrupt enable in NVIC */
+	USART2->CR3 |= USART2ENUSART_CR3_DMAT;
+
+	/* DMA interrupt and enable in NVIC  - */
+	DMA1_STREAM6->CR |= DMA_S6CR_TCIE;
+	NVIC_EnableIRQ(DMA1_Stream6_IRQn);
 
 }
 
