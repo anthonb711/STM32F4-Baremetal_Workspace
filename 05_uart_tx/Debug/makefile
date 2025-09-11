@@ -59,8 +59,8 @@ all: main-build
 main-build: 05_uart_tx.elf secondary-outputs
 
 # Tool invocations
-05_uart_tx.elf 05_uart_tx.map: $(OBJS) $(USER_OBJS) /home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/05_uart_tx/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "05_uart_tx.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/anthon/Embd/repos/STM32F4-Baremetal_Workspace/05_uart_tx/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="05_uart_tx.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+05_uart_tx.elf 05_uart_tx.map: $(OBJS) $(USER_OBJS) /Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/05_uart_tx/STM32F411RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "05_uart_tx.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/05_uart_tx/STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="05_uart_tx.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -14,7 +14,4 @@ void uart2_tx_init				(void										);
 void uart2_rx_interrupt_init	(void										);
 void uart2_write				(int ch										);
 
-
-
-
 #endif /* UART_H_ */

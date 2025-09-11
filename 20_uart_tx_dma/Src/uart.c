@@ -7,7 +7,7 @@
 #define CR1_UE				(1U<<13)    // UART enable
 #define GPIOAEN				(1U<<0)
 #define USART2EN			(1U<<17)
-#define USART_CR3_DMAT		(1U<<7)
+#define USART2_CR3_DMAT		(1U<<7)
 #define SYS_FREQ			16000000	// 16MHz
 #define	UART_BAUDRATE		115200
 #define SR_RXNE				(1U<<5)		// RX not empty, only try to read if data is present
@@ -17,7 +17,7 @@
 #define DMA_S6CR_CHSEL		(4U<<25) // CH4
 #define DMA_S6CR_MINC		(1U<<10)
 #define DMA_S6CR_TCIE		(1U<<4)
-#define DMA_S6CR_DIR		(1U<6)	// set transfer direction to mem->periph
+#define DMA_S6CR_DIR		(1U<<6)	// set transfer direction to mem->periph
 
 
 
@@ -64,10 +64,10 @@ void dma1_stream6_init(uint32_t src, uint32_t dst, uint32_t len)
 	DMA1_Stream6->NDTR = len;
 
 	/* select stream6 CH4  - CHSEL bits 27:25 CH4 = 100*/
-	DMA_Stream6->CR = DMA_S6CR_CHSEL; // clear the full register and set CH select to CH4
+	DMA1_Stream6->CR = DMA_S6CR_CHSEL; // clear the full register and set CH select to CH4
 
 	/* enable memory increment */
-	DMA_Stream6->CR |= DMA_S6CR_MINC;
+	DMA1_Stream6->CR |= DMA_S6CR_MINC;
 
 	/* configure direction - mem -> periph - bits 1:0 (01) */
 	DMA1_Stream6->CR |= DMA_S6CR_DIR;
@@ -79,10 +79,10 @@ void dma1_stream6_init(uint32_t src, uint32_t dst, uint32_t len)
 	DMA1_Stream6->CR |= DMA_S6CR_EN;
 
 	/* enable uart2_tx DMA */
-	USART2->CR3 |= USART2ENUSART_CR3_DMAT;
+	USART2->CR3 |= USART2_CR3_DMAT;
 
 	/* DMA interrupt and enable in NVIC  - */
-	DMA1_STREAM6->CR |= DMA_S6CR_TCIE;
+	DMA1_Stream6->CR |= DMA_S6CR_TCIE;
 	NVIC_EnableIRQ(DMA1_Stream6_IRQn);
 
 }
@@ -137,6 +137,38 @@ void uart2_rx_interrupt_init(void)
 	__enable_irq();
 
 
+}
+
+void uart2_tx_init(void)
+{
+	/*************** Configure the GPIO pin ***************/
+	/* enable clock access to GPIOA */
+	RCC->AHB1ENR |= GPIOAEN;
+
+	/* set PA2 mode to alt function mode */
+	GPIOA->MODER &=~(1U<<4);
+	GPIOA->MODER |= (1U<<5);
+
+	/* set PA2 alt function type to UART_TX (AF07) (0111)(bits 8-11) */
+	/* AFR has an arry of size 2, [0]for AFRL [1] for AFRH */
+	GPIOA->AFR[0] |= (1U<<8);
+	GPIOA->AFR[0] |= (1U<<9);
+	GPIOA->AFR[0] |= (1U<<10);
+	GPIOA->AFR[0] &=~(1U<<11);
+
+
+	/*************** Configure the uart module ***************/
+	/* enable clock access to uart2 */
+	RCC->APB1ENR |= USART2EN;
+
+	/* configure bauderate */
+	uart_set_bd(USART2,SYS_FREQ, UART_BAUDRATE);
+
+	/* configure the transfer direction */
+	USART2->CR1 = CR1_TE; // Clean the UART overwrite instead of friendly programming with the |=
+
+	/* enable the uart module */
+	USART2->CR1 |= CR1_UE; // We have already configure the TE and defaults need to keep it with friendly programming |=
 }
 
 
