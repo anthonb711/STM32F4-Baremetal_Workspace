@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>19_timers_interrupt</name>
+	<name>20_uart_tx_dma</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -32,7 +32,7 @@
 		<link>
 			<name>chip_headers</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/chip_headers</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/chip_headers</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
