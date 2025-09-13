@@ -14,7 +14,8 @@
 
 static void dma1_stream6_callback	(void);
 
-char message[31] = "Hello from Stm32 DMA";
+char message[31] = "Hello from Stm32 DMA transfer\n\r";
+
 int main(void)
 {
 	RCC->AHB1ENR |= GPIOAEN;	// enable the clock from the AHB1 bus to Port A. Write the enable bit to the Bus register0
@@ -25,14 +26,13 @@ int main(void)
 
 
 	uart2_tx_init();
-	dma1_stream6_init((uint32_t)message, (uint32_t)USART2->DR, 31);
+	dma1_stream6_init((uint32_t)message, (uint32_t)&USART2->DR, 31);
 
 	while (1)
 	{
 
 	}
 }
-
 
 
 
