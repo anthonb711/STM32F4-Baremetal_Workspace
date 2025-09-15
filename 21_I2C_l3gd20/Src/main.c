@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "stm32f411xe.h"
 #include "uart.h"
+#include "i2c.h"
 
 
 #define GPIOAEN			(1U<<0)
