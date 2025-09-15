@@ -1,9 +1,0 @@
-/Users/thewiz/embedded/LinuxEmbd/STM32F4-BareMetal_Workspace/chip_headers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
-../Src/uart.c:37:5:__io_putchar	16	static
-../Src/uart.c:45:6:dma1_stream6_init	24	static
-../Src/uart.c:94:6:uart2_rx_interrupt_init	8	static,ignoring_inline_asm
-../Src/uart.c:146:6:uart2_tx_init	8	static
-../Src/uart.c:179:6:uart2_read	4	static
-../Src/uart.c:189:6:uart2_write	16	static
-../Src/uart.c:199:13:uart_set_bd	24	static
-../Src/uart.c:205:17:compute_uart_bd	16	static
