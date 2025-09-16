@@ -24,6 +24,7 @@
 #define SR1_TXE					(1U<<7) 	// transmit flag
 #define CR1_ACK					(1U<<10)	// acknowledge bit
 #define SR1_RXNE				(1U<<6)		// data register not empty
+#define SR1_BTF					(1U<<2)		//byte transfer finished  = 1
 
 void main(void){
 
@@ -110,17 +111,20 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 	 * By left shifting a 7-bit addr we are adding the R/W bit to 0 or write. DR receives 8 bits in total */
 	I2C1->DR = saddr << 1;
 
-	/* wait for the addr flags is set */
+	/* wait for the slave to ack. when ack is recieve the addr flag is set  */
 	while(!(I2C1->SR1 & SR1_ADDR)){}
 
 	/* clear the addr flag by reading SR2 */
 	tmp = I2C1->SR2;
 
-	/* send memory addr*/
+	/* send memory addr, this sets the pointer register in slave device for the upcomming read*/
 	I2C1->DR = maddr;
 
 	/*  check txe is empty */
 	while(!(I2C->SR1 & SR1_TXE)){}
+
+	/* should check BTF before restart*/
+	while(!(I2C1->SR1 & SR1_BTF)){}
 
 	/* generate a restart condition */
 	I2C1->CR1 |= CR1_START;
@@ -140,6 +144,8 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 	tmp = I2C1->SR2;
 
 
+	/*  should check BTF before stop*/
+	while(!(I2C1->SR1 & SR1_BTF)){}
 	/* generate a stop condition */
 	I2C1->CR1 |= CR1_STOP;
 
