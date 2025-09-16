@@ -7,14 +7,14 @@
 #include "stm32f411xe.h"
 #include "i2c.h"
 
-#define I2C1EN 			(1U<<21)
-#define GPIOBEN			(1U<<1)
-#define	OTYPER_OT8		(1U<<8)
-#define OTYPER_OT9		(1U<<9)
-#define CR2_FREQ		(1U<<4)	// 16Mhz
-
-
-
+#define I2C1EN 					(1U<<21)
+#define GPIOBEN					(1U<<1)
+#define	OTYPER_OT8				(1U<<8)
+#define OTYPER_OT9				(1U<<9)
+#define CR2_FREQ				(1U<<4)	// 16Mhz
+#define I2C_100KHZ				80 		// 0b0101 0000 = decimal 80
+#define SD_MODE_MAX_RISE_TIME	17		// can use many tools to calculate this
+#define CR1_PE					(1U<<0)
 
 void main(void){
 
@@ -71,5 +71,14 @@ void I2C1_init(void)
 	I2C1->CR2 |= CR2_FREQ;
 
 	/* set I2C clock mode in the CCR */
+	I2C1->CCR = I2C_100KHZ;
+
+	/*  set the max rise time */
+	I2C1->TRISE = SD_MODE_MAX_RISE_TIME;
+
+	/* enable I2C */
+	I2C1->CR1 |= CR1_PE;
+
+
 }
 
