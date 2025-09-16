@@ -139,13 +139,14 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 	/* clear the addr flag by reading SR2 */
 	tmp = I2C1->SR2;
 
-	/* wait for data register to be empty */
-	while((I2C1->SR1 & SR1_RXNE)){}
 
 	/* generate a stop condition */
 	I2C1->CR1 |= CR1_STOP;
 
+	/* wait for data register to be set */
+	while(!(I2C1->SR1 & SR1_RXNE)){}
 
+	*data++ = I2C1->DR;
 }
 
 
