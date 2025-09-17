@@ -223,8 +223,44 @@ void I2C_burstRead(char saddr, char maddr, int n, char* data)
 	}
 }
 
+void I2C_burstWrite(char saddr, char maddr, int n, char* data)
+{
+	volatile int tmp;
 
+		/*wait while the bus is busy make sure the I2C bus is not busy*/
+		while (I2C1->SR2 & SR2_BUSY){}
 
+		/* generate a start condition and wait for the start bit */
+		I2C1->CR1 |= CR1_START;
+		while(!(I2C1->SR1 & SR1_SB)){}
+
+		/* send slave addr + write */
+		I2C1->DR = saddr << 1;
+
+		/* wait for the addr flags is set, then clear it */
+		while(!(I2C1->SR1 & SR1_ADDR)){}
+		tmp = I2C1->SR2;
+
+		/*  wait until data register is empty*/
+		while(!(I2C1->SR1 & SR1_TXE)){}
+
+		/* send memory addr */
+		I2C1->DR = maddr;
+
+		/* send data to slave */
+		for(int i = 0; i < n; i ++){
+			/*  wait until data register is empty*/
+			while(!(I2C1->SR1 & SR1_TXE)){}
+
+			/* send memory addr */
+			I2C1->DR = *data++;
+			i++;
+		}
+
+		/*  should wait for BTF then generate stop*/
+		while(!(I2C1->SR1 & SR1_BTF)){}
+		I2C1->CR1 |= CR1_STOP;
+}
 
 
 
