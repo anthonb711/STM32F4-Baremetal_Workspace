@@ -26,10 +26,6 @@
 #define SR1_RXNE				(1U<<6)		// data register not empty
 #define SR1_BTF					(1U<<2)		//byte transfer finished  = 1
 
-void main(void){
-
-}
-
 
 void I2C1_init(void)
 {
@@ -97,11 +93,66 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 	/*wait while the bus is busy make sure the I2C bus is not busy*/
 	while (I2C1->SR2 & SR2_BUSY){}
 
-	/* generate a start condition */
+	/* generate a start condition and wait for the start bit */
 	I2C1->CR1 |= CR1_START;
+	while(!(I2C1->SR1 & SR1_SB)){}
 
-	/*  wait for the start bit to be set */
-	while(!(I2C->SR1 & SR1_SB)){}
+	/*
+	 * transmit slave address + Write
+	 * the slave address is 7-bits and it with the R/W (1/0) bit is the the first 8 bits of the frame.
+	 * the ACK bit is then sent followed buy the data, another ACK bit and then a stop condition.
+	 * so the address needs to be put in the data register along with the actual data to be read/written.
+	 * by left shifting a 7-bit addr we are adding the R/W bit to 0 or write. DR receives 8 bits in total
+	 */
+	I2C1->DR = saddr << 1;
+
+	/* wait for the addr flags is set, then clear it */
+	while(!(I2C1->SR1 & SR1_ADDR)){}
+	tmp = I2C1->SR2;
+
+	/* send memory addr, this sets the pointer register in slave device for the upcoming read*/
+	I2C1->DR = maddr;
+
+	/*  check txe is empty, then should check BTF before restart */
+	while(!(I2C1->SR1 & SR1_TXE)){}
+	while(!(I2C1->SR1 & SR1_BTF)){}
+
+	/* generate a restart condition and wait for the start bit to be set */
+	I2C1->CR1 |= CR1_START;
+	while(!(I2C1->SR1 & SR1_SB)){}
+
+	/* read the data from slave here we are OR-ing the R/W bit to 1 for read*/
+	I2C1->DR = saddr << 1 | 1;
+
+	/* wait for the addr flags is set, disable the ACK, then clear it */
+	while(!(I2C1->SR1 & SR1_ADDR)){}
+	/* disable the acknowledge */
+	I2C1->CR1 &=~CR1_ACK;
+	tmp = I2C1->SR2;
+
+
+
+	/*  should wait for BTF then generate stop*/
+	while(!(I2C1->SR1 & SR1_BTF)){}
+	I2C1->CR1 |= CR1_STOP;
+
+	/* wait for data register to be set */
+	while(!(I2C1->SR1 & SR1_RXNE)){}
+
+	/* save the byte in master, then increment the pointer to the next index of the buffer */
+	*data++ = I2C1->DR;
+}
+
+void I2C_burstRead(char saddr, char maddr, int n, char* data)
+{
+	volatile int tmp;
+
+	/*wait while the bus is busy make sure the I2C bus is not busy*/
+	while (I2C1->SR2 & SR2_BUSY){}
+
+	/* generate a start condition and wait for the start bit */
+	I2C1->CR1 |= CR1_START;
+	while(!(I2C1->SR1 & SR1_SB)){}
 
 	/* transmit slave address + Write
 	 * the slave address is 7-bits and it with the R/W (1/0) bit is the the first 8 bits of the frame.
@@ -111,48 +162,65 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 	 * By left shifting a 7-bit addr we are adding the R/W bit to 0 or write. DR receives 8 bits in total */
 	I2C1->DR = saddr << 1;
 
-	/* wait for the slave to ack. when ack is recieve the addr flag is set  */
+	/* wait for the addr flags is set, then clear it */
 	while(!(I2C1->SR1 & SR1_ADDR)){}
-
-	/* clear the addr flag by reading SR2 */
 	tmp = I2C1->SR2;
 
-	/* send memory addr, this sets the pointer register in slave device for the upcomming read*/
+	/*  check txe is empty */
+	while(!(I2C1->SR1 & SR1_TXE)){}
+
+	/* send memory addr, this sets the pointer register in slave device for the upcoming read*/
 	I2C1->DR = maddr;
 
-	/*  check txe is empty */
-	while(!(I2C->SR1 & SR1_TXE)){}
-
-	/* should check BTF before restart*/
+	/*  check txe is empty, then should check BTF before restart */
+	while(!(I2C1->SR1 & SR1_TXE)){}
 	while(!(I2C1->SR1 & SR1_BTF)){}
 
-	/* generate a restart condition */
+	/* generate a start condition and wait for the start bit */
 	I2C1->CR1 |= CR1_START;
-	/*  wait for the start bit to be set */
-	while(!(I2C->SR1 & SR1_SB)){}
+	while(!(I2C1->SR1 & SR1_SB)){}
 
 	/* read the data from slave here we are OR-ing the R/W bit to 1 for read*/
 	I2C1->DR = saddr << 1 | 1;
 
-	/* wait for the addr flags is set */
+	/* wait for the addr flags is set, then clear it */
 	while(!(I2C1->SR1 & SR1_ADDR)){}
-
-	/* disable the acknowledge */
-	I2C1->CR1 &=~CR1_ACK;
-
-	/* clear the addr flag by reading SR2 */
 	tmp = I2C1->SR2;
 
+	/* enable the acknowledge */
+	I2C1->CR1 |= CR1_ACK;
 
-	/*  should check BTF before stop*/
-	while(!(I2C1->SR1 & SR1_BTF)){}
-	/* generate a stop condition */
-	I2C1->CR1 |= CR1_STOP;
+	/* now read the bytes */
+	while(n > 0U)
+	{
+		/* check if one byte is left */
+		if (n == 1U)
+		{
+			/* disable the acknowledge */
+			I2C1->CR1 &=~CR1_ACK;
 
-	/* wait for data register to be set */
-	while(!(I2C1->SR1 & SR1_RXNE)){}
+			/*  should wait for BTF then generate stop*/
+			while(!(I2C1->SR1 & SR1_BTF)){}
+			I2C1->CR1 |= CR1_STOP;
 
-	*data++ = I2C1->DR;
+			/* wait for data register to be set */
+			while(!(I2C1->SR1 & SR1_RXNE)){}
+
+			/* save the byte in master, then increment the pointer to the next index of the buffer */
+			*data++ = I2C1->DR;
+			break;
+		}
+		else
+		{
+			/* wait for data register to be set */
+			while(!(I2C1->SR1 & SR1_RXNE)){}
+
+			/* save the byte in master, then increment the pointer to the next index of the buffer */
+			*data++ = I2C1->DR;
+
+			n--;
+		}
+	}
 }
 
 
