@@ -25,7 +25,8 @@ int main(void)
 	GPIOA->MODER |= (1U<<10);	// set bit 10 to 1
 	GPIOA->MODER &=~(1U<<11);	// set bit 11 to 0
 
-
+	I2C_init();
+	l3gd20_init();
 	uart2_tx_init();
 	dma1_stream6_init((uint32_t)message, (uint32_t)&USART2->DR, 31);
 
