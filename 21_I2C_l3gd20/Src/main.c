@@ -1,58 +1,38 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "stm32f411xe.h"
-#include "uart.h"
-#include "i2c.h"
+#include "l3gd20.h"
 
 
-#define GPIOAEN			(1U<<0)
-#define GPIOA_5			(1U<<5)
-#define LED_PIN			GPIOA_5
-#define	HISR_TCIF6		(1U<<21)
-#define HIFCR_CTCIF6    (1U<<21)
+int16_t x, y, z;
+float xdps, ydps, zdps;
 
+extern uint8_t data_vals[6];
 
-
-static void dma1_stream6_callback	(void);
-
-char message[31] = "Hello from Stm32 DMA transfer\n\r";
 
 int main(void)
 {
-	RCC->AHB1ENR |= GPIOAEN;	// enable the clock from the AHB1 bus to Port A. Write the enable bit to the Bus register0
-
-	// set pin 5 direction. Pin 5 is bits 10 & 11 in the MODE register
-	GPIOA->MODER |= (1U<<10);	// set bit 10 to 1
-	GPIOA->MODER &=~(1U<<11);	// set bit 11 to 0
-
-	I2C_init();
 	l3gd20_init();
-	uart2_tx_init();
-	dma1_stream6_init((uint32_t)message, (uint32_t)&USART2->DR, 31);
 
 	while (1)
 	{
+		/* read starts at OUT_X_L */
+		l3gd20_read_values(DATA_START_ADDR);
+
+		/* combine high and low for each axis */
+		x = ((data_vals[1]<<8) | data_vals[0]);
+		y = ((data_vals[3]<<8) | data_vals[2]);
+		z = ((data_vals[4]<<8) | data_vals[5]);
+
+		/* convert raw to degrees per second */
+		xdps = (x * .00875);
+		ydps = (y * .00875);
+		zdps = (z * .00875);
 
 	}
 }
 
 
-
-static void dma1_stream6_callback(void)
-{
-	GPIOA->ODR |= LED_PIN;
-}
-
-void DMA1_Stream6_IRQHandler()
-{
-	if(DMA1->HISR & HISR_TCIF6)
-	{
-		DMA1->HIFCR |= HIFCR_CTCIF6;
-
-		dma1_stream6_callback();
-	}
-
-}
 
 
 

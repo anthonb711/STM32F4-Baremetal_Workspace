@@ -9,13 +9,11 @@
 
 #define I2C1EN 					(1U<<21)
 #define GPIOBEN					(1U<<1)
-#define	OTYPER_OT8				(1U<<8)
-#define OTYPER_OT9				(1U<<9)
 #define CR2_FREQ				(1U<<4)	// 16Mhz
 
 #define I2C_100KHZ				80			// 0b0101 0000 = decimal 80
 #define SD_MODE_MAX_RISE_TIME	17			// 0b0001 0110 = decimal 17 using standard mode
-#define CR1_PE					(1U<<0)
+#define CR1_PE					(1U<<0)		// enable i2c
 #define SR2_BUSY				(1U<<1)		// i2c busy is busy = 1
 #define CR1_START				(1U<<8)		// generated start condition
 #define CR1_STOP				(1U<<9)		// generated start condition
@@ -40,21 +38,10 @@ void I2C1_init(void)
 	GPIOB->MODER &=~(1U<<18);
 	GPIOB->MODER |= (1U<<19);
 
-	/* PB8 SCL - alt function I2C1 */
-	GPIOB->AFR[1] |= (1U<<0);
-	GPIOB->AFR[1] &=~(1U<<1);
-	GPIOB->AFR[1] |= (1U<<2);
-	GPIOB->AFR[1] &=~(1U<<3);
-
-	/* PB9 SDA - alt function I2C1*/
-	GPIOB->AFR[1] |= (1U<<4);
-	GPIOB->AFR[1] &=~(1U<<5);
-	GPIOB->AFR[1] |= (1U<<6);
-	GPIOB->AFR[1] &=~(1U<<7);
 
 	/* set PB8 & PB9 output type to open drain */
-	GPIOB->OTYPER |= OTYPER_OT8;
-	GPIOB->OTYPER |= OTYPER_OT9;
+	GPIOB->OTYPER |= (1U<<8);
+	GPIOB->OTYPER |= (1U<<9);
 
 	/* enable the pull-up for PB8 & PB9*/
 	GPIOB->PUPDR |= (1U<<16);
@@ -63,9 +50,23 @@ void I2C1_init(void)
 	GPIOB->PUPDR |= (1U<<18);
 	GPIOB->PUPDR &=~(1U<<19);
 
-	/* enable clock access to I2C1*/
+	/* PB8 SCL - alt function I2C1 */
+	GPIOB->AFR[1] &=~(1U<<0);
+	GPIOB->AFR[1] &=~(1U<<1);
+	GPIOB->AFR[1] |= (1U<<2);
+	GPIOB->AFR[1] &=~(1U<<3);
+
+	/* PB9 SDA - alt function I2C1 (AF4)*/
+	GPIOB->AFR[1] &=~(1U<<4);
+	GPIOB->AFR[1] &=~(1U<<5);
+	GPIOB->AFR[1] |= (1U<<6);
+	GPIOB->AFR[1] &=~(1U<<7);
+
+	/* enable clock access to I2C1 (AF4)*/
 	RCC->APB1ENR |= I2C1EN;
 
+	/*wait while until the bus is not busy */
+	while (I2C1->SR2 & SR2_BUSY){}
 
 	/* enter reset mode */
 	I2C1->CR1 |= (1U<<15);
@@ -90,7 +91,7 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 {
 	volatile int tmp;
 
-	/*wait while the bus is busy make sure the I2C bus is not busy*/
+	/*wait while until the bus is not busy */
 	while (I2C1->SR2 & SR2_BUSY){}
 
 	/* generate a start condition and wait for the start bit */
@@ -115,7 +116,7 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 
 	/*  check txe is empty, then should check BTF before restart */
 	while(!(I2C1->SR1 & SR1_TXE)){}
-	while(!(I2C1->SR1 & SR1_BTF)){}
+	//while(!(I2C1->SR1 & SR1_BTF)){}
 
 	/* generate a restart condition and wait for the start bit to be set */
 	I2C1->CR1 |= CR1_START;
@@ -133,7 +134,7 @@ void I2C_byteRead(char saddr, char maddr, char* data)
 
 
 	/*  should wait for BTF then generate stop*/
-	while(!(I2C1->SR1 & SR1_BTF)){}
+	//while(!(I2C1->SR1 & SR1_BTF)){}
 	I2C1->CR1 |= CR1_STOP;
 
 	/* wait for data register to be set */
@@ -174,7 +175,7 @@ void I2C_burstRead(char saddr, char maddr, int n, char* data)
 
 	/*  check txe is empty, then should check BTF before restart */
 	while(!(I2C1->SR1 & SR1_TXE)){}
-	while(!(I2C1->SR1 & SR1_BTF)){}
+	//while(!(I2C1->SR1 & SR1_BTF)){}
 
 	/* generate a start condition and wait for the start bit */
 	I2C1->CR1 |= CR1_START;
@@ -200,7 +201,7 @@ void I2C_burstRead(char saddr, char maddr, int n, char* data)
 			I2C1->CR1 &=~CR1_ACK;
 
 			/*  should wait for BTF then generate stop*/
-			while(!(I2C1->SR1 & SR1_BTF)){}
+			//while(!(I2C1->SR1 & SR1_BTF)){}
 			I2C1->CR1 |= CR1_STOP;
 
 			/* wait for data register to be set */

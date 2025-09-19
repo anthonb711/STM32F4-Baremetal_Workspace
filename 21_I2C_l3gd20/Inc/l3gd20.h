@@ -54,6 +54,9 @@
 #define	NORMAL			(0x0F)
 #define WHO_AM_I_R		(0x0F)	// *WHO_AM_I = (0xD4) 0b1101 0100
 
+
+
+
 void l3gd20_init		(void					);
 void l3gd20_read_addr	(uint8_t reg			);
 void l3gd20_read_values	(uint8_t reg			);

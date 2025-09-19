@@ -6,6 +6,9 @@ uint8_t data_vals[6];
 
 void l3gd20_init(void)
 {
+	/* enable the I2C module */
+	I2C1_init();
+
 	/* read device ID should return (0xD4)*/
 	l3gd20_read_addr(WHO_AM_I_R);
 
