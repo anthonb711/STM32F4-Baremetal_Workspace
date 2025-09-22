@@ -9,7 +9,7 @@ void l3gd20_init(void)
 	/* enable the I2C module */
 	I2C1_init();
 
-	/* read device ID should return (0xD4)*/
+	/* read device ID should return (0xD7)*/
 	l3gd20_read_addr(WHO_AM_I_R);
 
 	/* enter stand by mode*/
