@@ -1,8 +1,8 @@
 #ifndef L3GD20_H_
 #define L3GD20_H_
-
+#include "stm32f411xe.h"
 #include <stdint.h>
-#include "i2c.h"
+#include "spi.h"
 
 
 
