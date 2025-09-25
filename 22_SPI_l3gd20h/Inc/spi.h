@@ -3,5 +3,11 @@
 
 #include "stm32f411xe.h"
 
+void cs_disable		(void							);
+void cs_enable		(void							);
+void spi_gpio_init	(void							);
+void spi1_config	(void							);
+void spi1_receive	(uint8_t *data, uint32_t size	);
+void spi1_transmit	(uint8_t *data, uint32_t size	);
 
 #endif /* SPI_H_ */

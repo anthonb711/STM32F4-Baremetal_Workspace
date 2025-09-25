@@ -11,6 +11,10 @@
 #define SPI_CR1_DFF			(1U<<11)
 #define SPI_CR1_SSI			(1U<<8)
 #define SPI_CR1_SSM			(1U<<9)
+#define SPI_SR_TXE			(1U<<1)
+#define SPI_SR_RXNE			(1U<<0)
+#define SPI_SR_BSY			(1U<<7)
+
 
 
 // Alternate function mapping for SPI1 = AF05
@@ -65,7 +69,7 @@ void spi1_config(void)
 	RCC->APB2ENR |= SPI1EN;
 	/* set baud rate to fPCLK/4 = 4Mhz*/
 	SPI1->CR1 |= (1U<<3);
-	SPI1->CR1 &=~(1U<<4)
+	SPI1->CR1 &=~(1U<<4);
 	SPI1->CR1 &=~(1U<<5);
 
 	/* set SCL mode */
@@ -81,7 +85,7 @@ void spi1_config(void)
 	/* set master mode */
 	SPI1->CR1 |= SPI_CR1_MSTR;
 
-	/* set data frame format */
+	/* set data frame format - 8bit */
 	SPI1->CR1 &=~SPI_CR1_DFF;
 
 	/* set NSS to work in software mode */
@@ -91,4 +95,75 @@ void spi1_config(void)
 	/* enable the SPI module */
 	SPI1->CR1 |= SPI_CR1_SPE;
 }
+
+
+void spi1_transmit(uint8_t *data, uint32_t size)
+{
+	uint32_t i = 0;
+	uint8_t tmp;
+
+	while(i<size)
+	{
+		/* wait until TXE empty = 1 */
+		while(!(SPI1->SR & SPI_SR_TXE)){}
+
+		/* write data to data register */
+		SPI1->DR = data[i];
+		i++;
+	}
+
+	/* wait for TXE is be empty */
+	while(!(SPI1->SR & (SPI_SR_TXE))){}
+
+	/* wait for the busy flag to reset */
+	while(SPI1->SR & (SPI_SR_BSY)){}
+
+	/* clear overflow flag */
+	tmp = SPI1->DR;
+	tmp = SPI1->SR;
+
+}
+
+void spi1_receive(uint8_t *data, uint32_t size)
+{
+	uint32_t i = 0;
+	uint8_t tmp;
+
+	while(size)
+	{
+		/* send dummy data */
+		SPI1->DR = 0;
+
+		/* wait until RXNE is set */
+		while(!(SPI1->SR & (SPI_SR_RXNE))){}
+
+		/* write data to data register */
+		*data++ = (SPI1->DR);
+		i--;
+	}
+}
+
+
+void cs_enable(void)
+{
+	/* set PA9 LOW to enable */
+	GPIOA->ODR &=~(1U<<9);
+}
+
+void cs_disable(void)
+{
+	/* set PA9 HIGH to disable */
+	GPIOA->ODR |= (1U<<9);
+}
+
+
+
+
+
+
+
+
+
+
+
 
