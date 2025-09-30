@@ -1,6 +1,6 @@
 #include "l3gd20.h"
 
-
+#define MULTI_BYTE_EN (0x40)
 
 
 void l3gd20_init(void)
@@ -26,18 +26,30 @@ void l3gd20_init(void)
 
 
 /* read a register on device */
-void l3gd20_read_addr(uint8_t reg)
+void l3gd20_read_addr(uint8_t addr)
 {
 
 }
 
 
 /* write to a register on device*/
-void l3gd20_write(uint8_t reg, char value)
+void l3gd20_write(uint8_t addr, uint8_t value)
 {
 	uint8_t data[2];
 
-	/* enable multibyte */
+	/* enable multi-byte and set data into buffer */
+	data[0] = addr|MULTI_BYTE_EN;
+	data[1] = value;
+
+	/* pull cs pin LOW to enable slave */
+	cs_enable();
+
+	/* transmit the data and the size of the data*/
+	spi1_transmit(data, 2);
+
+	/* pull cs pin HIGH to disable slave */
+	cs_disable();
+
 }
 
 

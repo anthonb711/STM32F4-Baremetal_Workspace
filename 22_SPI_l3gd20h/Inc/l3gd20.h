@@ -58,9 +58,9 @@
 
 
 void l3gd20_init		(void					);
-void l3gd20_read_addr	(uint8_t reg			);
+void l3gd20_read_addr	(uint8_t addr			);
 void l3gd20_read_values	(uint8_t reg			);
-void l3gd20_write		(uint8_t reg, char value);
+void l3gd20_write		(uint8_t addr, uint8_t value);
 
 
 
