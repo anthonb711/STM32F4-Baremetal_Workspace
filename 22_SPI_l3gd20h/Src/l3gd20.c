@@ -1,6 +1,8 @@
 #include "l3gd20.h"
+#include "spi.h"
 
-#define MULTI_BYTE_EN (0x40)
+#define MULTI_BYTE_EN	(0x40)
+#define READ_EN			(0x80)
 
 
 void l3gd20_init(void)
@@ -9,13 +11,10 @@ void l3gd20_init(void)
 	spi_gpio_init();
 	spi1_config();
 
-	/* read device ID should return (0xD7)*/
-	l3gd20_read_addr(WHO_AM_I_R);
-
-	/* enter stand by mode*/
+	/* enter stand by mode */
 	l3gd20_write(CTRL_REG1_R, STANDBY);
 
-	/* set data format range  to +/-250dps*/
+	/* set data format range  to +/-250dps */
 	l3gd20_write(CTRL_REG4_R, RES_250DPS);
 
 	/* enter normal Mode */
@@ -25,9 +24,24 @@ void l3gd20_init(void)
 
 
 
-/* read a register on device */
-void l3gd20_read_addr(uint8_t addr)
+/* read a register from slave device */
+void l3gd20_read(uint8_t addr, uint8_t * rxdata)
 {
+
+	/* pull CS pin LOW to enable slave */
+	cs_enable();
+
+	/* set read and multi-byte */
+	addr |= READ_EN;
+	addr |= MULTI_BYTE_EN;
+	/* transmit the data and the size of the data */
+	spi1_transmit(&addr, 1);
+
+	/* set read 6 bytes of data */
+	spi1_receive(rxdata, 6);
+
+	/* pull CS pin HIGH to disable slave */
+	cs_disable();
 
 }
 
@@ -38,26 +52,37 @@ void l3gd20_write(uint8_t addr, uint8_t value)
 	uint8_t data[2];
 
 	/* enable multi-byte and set data into buffer */
-	data[0] = addr|MULTI_BYTE_EN;
+	data[0] = (addr|MULTI_BYTE_EN);
 	data[1] = value;
 
-	/* pull cs pin LOW to enable slave */
+	/* pull CS pin LOW to enable slave */
 	cs_enable();
 
-	/* transmit the data and the size of the data*/
+	/* transmit the data and the size of the data */
 	spi1_transmit(data, 2);
 
-	/* pull cs pin HIGH to disable slave */
+	/* pull CS pin HIGH to disable slave */
 	cs_disable();
 
 }
 
 
-/* read the data registers */
-void l3gd20_read_values(uint8_t reg)
-{
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

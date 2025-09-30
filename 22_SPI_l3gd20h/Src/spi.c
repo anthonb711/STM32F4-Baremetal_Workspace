@@ -1,4 +1,4 @@
-#include "spi.h"
+ #include "spi.h"
 
 #define GPIOAEN				(1U<<0)
 #define	SPI1EN				(1U<<12)
@@ -7,7 +7,6 @@
 #define SPI_CR1_SPE			(1U<<6)
 #define SPI_CR1_RXONLY		(1U<<10)
 #define SPI_CR1_LSBFIRST	(1U<<7)
-#define SPI_CR1_LSBFIRST	(1U<<2)
 #define SPI_CR1_DFF			(1U<<11)
 #define SPI_CR1_SSI			(1U<<8)
 #define SPI_CR1_SSM			(1U<<9)
@@ -16,9 +15,7 @@
 #define SPI_SR_BSY			(1U<<7)
 
 
-
 // Alternate function mapping for SPI1 = AF05
-// SPI1_NSS		-> PA4
 // SPI1_SCK		-> PA5
 // SPI1_MISO	-> PA6
 // SPI1_MOSI	-> PA7
@@ -67,6 +64,7 @@ void spi1_config(void)
 {
 	/* enable clock access to SPI1 */
 	RCC->APB2ENR |= SPI1EN;
+
 	/* set baud rate to fPCLK/4 = 4Mhz*/
 	SPI1->CR1 |= (1U<<3);
 	SPI1->CR1 &=~(1U<<4);
@@ -126,20 +124,19 @@ void spi1_transmit(uint8_t *data, uint32_t size)
 
 void spi1_receive(uint8_t *data, uint32_t size)
 {
-	uint32_t i = 0;
-	uint8_t tmp;
 
 	while(size)
 	{
+		while(!(SPI1->SR & SPI_SR_TXE)) {}
 		/* send dummy data */
-		SPI1->DR = 0;
+		SPI1->DR = 0xFF;
 
 		/* wait until RXNE is set */
 		while(!(SPI1->SR & (SPI_SR_RXNE))){}
 
 		/* write data to data register */
 		*data++ = (SPI1->DR);
-		i--;
+		size--;
 	}
 }
 
