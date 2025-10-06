@@ -2,42 +2,31 @@
 #define LCD_2204_H_
 
 #include "stm32f411xe.h"
-#include"i2c.h"
+#include "systick.h"
 
 /* GIPO defines */
-#define GPIOAEN	(1U<<0)
+#define GPIOBEN	(1U<<1)
 #define GPIOCEN	(1U<<2)
-#define PA3		(1U<<3)
-#define PA5		(1U<<5)
-#define	PA6		(1U<<6)
-#define PC0		(1U<<0)
-#define PC1		(1U<<1)
-#define PC2		(1U<<2)
-#define PC3		(1U<<3)
-#define PC4		(1U<<4)
-#define PC5		(1U<<5)
-#define PC6		(1U<<6)
-#define PC7		(1U<<7)
+#define PB3		(1U<<3)
+#define PB5		(1U<<5)
+#define	PB6		(1U<<6)
 
 /* 2004 defines */
-#define E_PIN	PA3
-#define RS_PIN	PA5
-#define RW_PIN	PA6
-#define D0_PIN	PC0
-#define D1_PIN	PC1
-#define D2_PIN	PC2
-#define D3_PIN	PC3
-#define D4_PIN	PC4
-#define D5_PIN	PC5
-#define D6_PIN	PC6
-#define D7_PIN	PC7
+#define E_PIN	PB3
+#define RS_PIN	PB5
+#define RW_PIN	PB6
 
 /* 2004 cmd defines */
-#define
+#define INIT_VAL		(0x30) // used to initialize the lcd with delays
+#define EIGHT_BIT_FUN	(0x38) // this is for 8 bit, 5x8 char, 2 lines
+#define	CURSOR_R		(0x06) //
+#define CLEAR_DSP		(0x01) // homes cursor
+#define	CURSOR_BLINK	(0x0F) // turns on display and blinks cursor
+
 
 void lcd_init 	(void				);
 void gpio_init	(void				);
-void lcd_cmd	(unsigned char cmd	);
+void lcd_cmd	(uint8_t cmd		);
 void lcd_data	(char data			);
 
 
