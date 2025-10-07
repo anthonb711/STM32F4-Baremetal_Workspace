@@ -7,12 +7,12 @@
 /* GIPO defines */
 #define GPIOBEN	(1U<<1)
 #define GPIOCEN	(1U<<2)
-#define PB3		(1U<<3)
+#define PB8		(1U<<8)
 #define PB5		(1U<<5)
 #define	PB6		(1U<<6)
 
 /* 2004 defines */
-#define E_PIN	PB3
+#define E_PIN	PB8
 #define RS_PIN	PB5
 #define RW_PIN	PB6
 
